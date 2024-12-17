@@ -21,7 +21,8 @@ namespace Whitestone.OpenSerialPortMonitor.Main.Views
     public partial class SerialDataSendView : UserControl
     {
         public SerialDataSendView()
-        {
+        { 
+
             InitializeComponent();
         }
     }

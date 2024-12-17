@@ -1,9 +1,5 @@
-﻿using Caliburn.Micro;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+﻿using Caliburn.Micro; 
+using System.Reflection; 
 using System.Threading.Tasks;
 
 namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
@@ -18,9 +14,9 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
             }
         }
 
-        public void CloseWindow()
+        public async Task CloseWindowAsync()
         {
-            TryClose();
+            await TryCloseAsync(); 
         }
     }
 }

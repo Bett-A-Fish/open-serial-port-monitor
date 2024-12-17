@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -17,7 +18,7 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
     {
         private readonly IEventAggregator _eventAggregator;
         private SerialReader _serialReader;
-        private Timer _cacheTimer;
+        private System.Timers.Timer _cacheTimer;
         private int _rawDataCounter = 0;
 
         public SerialDataViewModel(IEventAggregator eventAggregator)
@@ -75,11 +76,12 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
             }
         }
 
-        public void Handle(SerialPortConnect message)
+        public async Task HandleAsync(SerialPortConnect message, CancellationToken token)
         {
             try
             {
-                _cacheTimer = new Timer();
+                var autoEvent = new AutoResetEvent(false);
+                _cacheTimer = new System.Timers.Timer();
                 _cacheTimer.Interval = 500;
                 _cacheTimer.Elapsed += _cacheTimer_Elapsed;
                 _cacheTimer.Start();
@@ -89,16 +91,16 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
             }
             catch (Exception ex)
             {
-                _eventAggregator.PublishOnUIThread(new ConnectionError() { Exception = ex });
+                await _eventAggregator.PublishOnUIThreadAsync(new ConnectionError() { Exception = ex }, token);
             }
         }
 
-        public void Handle(SerialPortDisconnect message)
+        public async Task HandleAsync(SerialPortDisconnect message, CancellationToken cancellationToken)
         {
             _cacheTimer.Stop();
 
             _serialReader.Stop();
-        }
+        } 
 
         void _cacheTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
@@ -116,7 +118,7 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
             DataViewRaw += dataRaw;
         }
 
-        public void Handle(Autoscroll message)
+        public async Task HandleAsync(Autoscroll message, CancellationToken cancellationToken)
         {
             IsAutoscroll = message.IsTurnedOn;
         }
@@ -148,19 +150,22 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
             }
         }
 
-        public void Handle(SerialPortSend message)
+        public async Task HandleAsync(SerialPortSend message, CancellationToken cancellationToken)
         {
             _serialReader.Send(message.Data);
         }
 
-        public void ClearAllRecived(){
+        public void ClearAllRecived()
+        {
             ClearRecived();
             ClearData();
         }
-        public void ClearRecived(){
+        public void ClearRecived()
+        {
             DataViewParsed = String.Empty;
         }
-        public void ClearData(){
+        public void ClearData()
+        {
             DataViewHex = String.Empty;
             DataViewRaw = String.Empty;
         }

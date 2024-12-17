@@ -5,10 +5,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using Whitestone.OpenSerialPortMonitor.Main.Framework;
 
 namespace Whitestone.OpenSerialPortMonitor.Main.Framework
 {
@@ -58,7 +55,7 @@ namespace Whitestone.OpenSerialPortMonitor.Main.Framework
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            DisplayRootViewFor<IShell>();
+            DisplayRootViewForAsync<IShell>();
         }
 
         protected override void OnUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)

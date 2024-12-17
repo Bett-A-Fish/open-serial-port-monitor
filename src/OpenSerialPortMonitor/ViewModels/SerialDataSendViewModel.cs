@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Whitestone.OpenSerialPortMonitor.Main.Messages;
@@ -44,7 +45,8 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
             set
             {
                 _isHex = value;
-                if (value){
+                if (value)
+                {
                     LineEnd = LENONE;
                 }
                 NotifyOfPropertyChange(() => IsHex);
@@ -92,26 +94,32 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
         }
 
         private bool _isConnected = false;
-        public bool IsConnected {
+        public bool IsConnected
+        {
             get { return _isConnected; }
-            set {
+            set
+            {
                 _isConnected = value;
                 NotifyOfPropertyChange(() => IsConnected);
                 NotifyOfPropertyChange(() => IsValidData);
             }
         }
         private bool _clearAfterSend = false;
-        public bool ClearAfterSend {
+        public bool ClearAfterSend
+        {
             get { return _clearAfterSend; }
-            set {
+            set
+            {
                 _clearAfterSend = value;
                 NotifyOfPropertyChange(() => ClearAfterSend);
             }
         }
         private string _lineEnd;
-        public string LineEnd {
+        public string LineEnd
+        {
             get { return _lineEnd; }
-            set {
+            set
+            {
                 Console.WriteLine(value.ToString());
                 _lineEnd = value;
                 NotifyOfPropertyChange(() => LineEnd);
@@ -121,14 +129,14 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
         private const string LECR = "add CR";
         private const string LELF = "add LF";
         private const string LECRLD = "add CR + LF";
-        public string[] LineEndsValues { get; } = {LENONE, LECR, LELF, LECRLD};
+        public string[] LineEndsValues { get; } = { LENONE, LECR, LELF, LECRLD };
         public SerialDataSendViewModel(IEventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;
             _eventAggregator.Subscribe(this);
             LineEnd = LENONE;
         }
-        public void DoSend()
+        public async Task DoSend()
         {
             List<byte> data = new List<byte>();
 
@@ -146,7 +154,8 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
             if (IsText)
             {
                 string parsed = DataToSend.Replace("\\\\r", "\r").Replace("\\\\n", "\n");
-                switch (LineEnd){
+                switch (LineEnd)
+                {
                     case LECR:
                         parsed += "\r";
                         break;
@@ -158,25 +167,26 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
                         break;
                 }
                 data.AddRange(System.Text.Encoding.ASCII.GetBytes(parsed));
-                if (ClearAfterSend){
+                if (ClearAfterSend)
+                {
                     DataToSend = String.Empty;
                 }
             }
 
-            _eventAggregator.PublishOnUIThread(new Messages.SerialPortSend() { Data = data.ToArray() });
+            await _eventAggregator.PublishOnUIThreadAsync(new Messages.SerialPortSend() { Data = data.ToArray() });
         }
 
-        public void Handle(SerialPortConnect message)
+        async Task IHandle<SerialPortConnect>.HandleAsync(SerialPortConnect message, CancellationToken cancellationToken)
         {
             IsConnected = true;
         }
 
-        public void Handle(SerialPortDisconnect message)
+        async Task IHandle<SerialPortDisconnect>.HandleAsync(SerialPortDisconnect message, CancellationToken cancellationToken)
         {
             IsConnected = false;
         }
 
-        public void Handle(ConnectionError message)
+        async Task IHandle<ConnectionError>.HandleAsync(ConnectionError message, CancellationToken cancellationToken)
         {
             IsConnected = false;
         }

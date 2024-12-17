@@ -14,3 +14,10 @@ D:\Projects\Temp\open-serial-port-monitor\src\SerialCommunication\bin\Debug\zh-H
 D:\Projects\Temp\open-serial-port-monitor\src\SerialCommunication\obj\Debug\SerialCommunication.dll
 D:\Projects\Temp\open-serial-port-monitor\src\SerialCommunication\obj\Debug\SerialCommunication.pdb
 D:\Projects\Temp\open-serial-port-monitor\src\SerialCommunication\obj\Debug\SerialCommunication.csprojResolveAssemblyReference.cache
+C:\repos2\open-serial-port-monitor\src\SerialCommunication\bin\Debug\SerialCommunication.dll
+C:\repos2\open-serial-port-monitor\src\SerialCommunication\bin\Debug\SerialCommunication.pdb
+C:\repos2\open-serial-port-monitor\src\SerialCommunication\obj\Debug\SerialCommunication.csproj.AssemblyReference.cache
+C:\repos2\open-serial-port-monitor\src\SerialCommunication\obj\Debug\SerialCommunication.csproj.CoreCompileInputs.cache
+C:\repos2\open-serial-port-monitor\src\SerialCommunication\obj\Debug\SerialCommunication.csproj.CopyComplete
+C:\repos2\open-serial-port-monitor\src\SerialCommunication\obj\Debug\SerialCommunication.dll
+C:\repos2\open-serial-port-monitor\src\SerialCommunication\obj\Debug\SerialCommunication.pdb

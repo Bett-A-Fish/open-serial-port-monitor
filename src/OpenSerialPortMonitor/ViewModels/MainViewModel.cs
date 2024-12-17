@@ -1,13 +1,8 @@
-﻿using Caliburn.Micro;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+﻿using Caliburn.Micro; 
+using System.ComponentModel.Composition; 
+using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
+using System.Windows; 
 using Whitestone.OpenSerialPortMonitor.Main.Framework;
 using Whitestone.OpenSerialPortMonitor.Main.Messages;
 
@@ -72,12 +67,12 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
             base.DisplayName = "Open Serial Port Monitor";// +Assembly.GetExecutingAssembly().GetName().Version;
         }
 
-        protected override void OnInitialize()
+        protected override async Task OnInitializeAsync(CancellationToken token)
         {
             SerialConnectorView = new SerialConnectorViewModel(_eventAggregator);
             SerialDataView = new SerialDataViewModel(_eventAggregator);
             SerialDataSendView = new SerialDataSendViewModel(_eventAggregator);
-            base.OnInitialize();
+            await base.OnInitializeAsync(token);
         }
 
         public void FileExit()
@@ -85,15 +80,15 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
             Application.Current.Shutdown();
         }
 
-        public void Autoscroll()
+        public async Task Autoscroll()
         {
             _isAutoscroll = !_isAutoscroll;
-            _eventAggregator.PublishOnUIThread(new Autoscroll { IsTurnedOn = _isAutoscroll });
+            await _eventAggregator.PublishOnUIThreadAsync(new Autoscroll { IsTurnedOn = _isAutoscroll });
         }
 
-        public void OpenAbout()
+        public async Task OpenAbout()
         {
-            _windowManager.ShowDialog(new AboutViewModel());
+            await _windowManager.ShowDialogAsync(new AboutViewModel());
         }
     }
 }

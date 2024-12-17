@@ -32,15 +32,7 @@ namespace Whitestone.OpenSerialPortMonitor.SerialCommunication
 
         public static IEnumerable<string> GetAvailablePorts()
         {
-            List<string> comPorts = new List<string>();
-
-            string[] availablePorts = SerialPort.GetPortNames();
-            foreach (string port in availablePorts)
-            {
-                comPorts.Add(port);
-            }
-
-            return comPorts.OrderBy(port => port);
+            return SerialPort.GetPortNames().Distinct().ToList().OrderBy(port => port);
         }
 
         public void Start(string portName, int baudRate, Parity parity, int dataBits, StopBits stopBits)

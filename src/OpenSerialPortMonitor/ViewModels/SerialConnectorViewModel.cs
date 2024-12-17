@@ -8,13 +8,14 @@ using Whitestone.OpenSerialPortMonitor.SerialCommunication;
 using Whitestone.OpenSerialPortMonitor.Main.Messages;
 using System.IO.Ports;
 using System.Windows;
+using System.Threading;
 
 namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
 {
     public class SerialConnectorViewModel : PropertyChangedBase, IHandle<ConnectionError>
     {
         private readonly IEventAggregator _eventAggregator;
-        
+
         public BindableCollection<string> ComPorts { get; set; }
         public BindableCollection<int> BaudRates { get; set; }
         public BindableCollection<Parity> Parities { get; set; }
@@ -91,8 +92,10 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
             IEnumerable<string> ports = SerialReader.GetAvailablePorts();
             List<string> toChange = new List<string>();
             //Search not non-existent
-            foreach (var port in ComPorts){
-                if (!ports.Contains(port)){
+            foreach (var port in ComPorts)
+            {
+                if (!ports.Contains(port))
+                {
                     toChange.Add(port);
                 }
             }
@@ -100,23 +103,26 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
             ComPorts.RemoveRange(toChange);
             toChange.Clear();
             //Search New
-            foreach (var port in ports){
-                if (!ComPorts.Contains(port)){
+            foreach (var port in ports)
+            {
+                if (!ComPorts.Contains(port))
+                {
                     toChange.Add(port);
                 }
             }
             //Add New
             ComPorts.AddRange(toChange);
             //Select One if needed
-            if (SelectedComPort == null || !ComPorts.Contains(SelectedComPort)){
+            if (SelectedComPort == null || !ComPorts.Contains(SelectedComPort))
+            {
                 SelectedComPort = ComPorts.FirstOrDefault();
             }
         }
-        public void Connect()
+        public async Task Connect()
         {
             IsConnected = true;
 
-            _eventAggregator.PublishOnUIThread(new SerialPortConnect
+            await _eventAggregator.PublishOnUIThreadAsync(new SerialPortConnect
             {
                 PortName = SelectedComPort,
                 BaudRate = SelectedBaudRate,
@@ -126,14 +132,14 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
             });
         }
 
-        public void Disconnect()
+        public async Task Disconnect()
         {
             IsConnected = false;
 
-            _eventAggregator.PublishOnUIThread(new SerialPortDisconnect());
+            await _eventAggregator.PublishOnUIThreadAsync(new SerialPortDisconnect());
         }
 
-        public void Handle(ConnectionError message)
+        public async Task HandleAsync(ConnectionError message, CancellationToken cancellationToken)
         {
             IsConnected = false;
 
@@ -142,6 +148,7 @@ namespace Whitestone.OpenSerialPortMonitor.Main.ViewModels
             {
                 errorMessage = message.Exception.InnerException.Message;
             }
+
             MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
